@@ -1,0 +1,124 @@
+<html>
+	<canvas id="c" width="1000" height="600"></canvas>
+	<script>
+		let settings = {
+			rayColor: "#FFFFFF",
+			wallColor: "#000000",
+			mousePressed: false,
+			lineDensity: 100,
+			screenWidth: 1000,
+			screenHeight: 600,
+			maxRayLength: 500
+		}
+		let c = document.getElementById("c")
+		let ctx = c.getContext("2d")
+		
+		let vect = function(x0, y0) {
+			return {x: x0, y: y0}
+		}
+		let drawLine = function(x1, y1, x2, y2, col) {
+			ctx.beginPath()
+			ctx.strokeStyle = col
+			ctx.moveTo(x1, settings.screenHeight - y1)
+			ctx.lineTo(x2, settings.screenHeight - y2)
+			ctx.stroke()
+			let dist = Math.sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1))
+			let dirx = (x2 - x1)
+			let diry = (y2 - y1)
+			return {
+				start: vect(x1, y1),
+				end: vect(x2, y2),
+				dir: vect(dirx, diry)
+			}
+		}
+		let listOfLines = []
+		
+		let dot = function(v1, v2) {
+			return v1.x*v2.x + v1.y*v2.y
+		}
+		let sub = function(v1, v2) {
+			return vect(v1.x - v2.x, v1.y - v2.y)
+		}
+		let add = function(v1, v2) {
+			return vect(v1.x + v2.x, v1.y + v2.y)
+		}
+		let scale = function(v, a) {
+			return vect(v.x*a, v.y*a)
+		}
+		let cross = function(v1, v2) {
+			return v1.x*v2.y - v1.y*v2.x
+		}
+		let createRay = function(pt, rad) {
+			return {origin: pt, dir: vect(Math.cos(rad), Math.sin(rad))}
+		}
+		let checkIntersection = function(ray, lines) {
+			let arrOfPts = []
+			for(let i = 0; i < lines.length; i++) {
+				let u = cross(sub(lines[i].start, ray.origin), ray.dir)/cross(ray.dir, lines[i].dir)
+				let t = cross(sub(lines[i].start, ray.origin), lines[i].dir)/cross(ray.dir, lines[i].dir)
+				if(u > 0 && u < 1) {
+					arrOfPts.push(t)
+				}
+			}
+			return arrOfPts.filter(x => x > 0 && x < settings.maxRayLength).reduce((x, y) => Math.min(x, y), Infinity)
+		}
+		let drawRay = function(ray, lines) {
+			let intersection = checkIntersection(ray, lines)
+			let pt = -1
+			if(intersection != Infinity) {
+				pt = add(scale(ray.dir, intersection), ray.origin)
+			} else {
+				pt = add(scale(ray.dir, settings.maxRayLength), ray.origin)
+			}
+			if(pt != -1) {
+				ctx.beginPath()
+				ctx.strokeStyle = settings.rayColor
+				ctx.moveTo(ray.origin.x, settings.screenHeight - ray.origin.y)
+				ctx.lineTo(pt.x, settings.screenHeight - pt.y)
+				ctx.stroke()
+			}
+		}
+		let clearScreen = function() {
+			ctx.fillStyle = "black"
+			ctx.fillRect(0, 0, settings.screenWidth, settings.screenHeight)
+		}
+		
+		let newlinestartx
+		let newlinestarty
+		let newlineendx
+		let newlineendy
+		c.addEventListener("mousemove", function(e) {
+			let x = e.clientX
+			let y = settings.screenHeight - e.clientY
+			clearScreen()
+			if(settings.mousePressed) {
+				ctx.beginPath()
+				ctx.strokeStyle = "red"
+				ctx.moveTo(newlinestartx, newlinestarty)
+				ctx.lineTo(e.clientX, e.clientY)
+				ctx.lineWidth = 3
+				ctx.stroke()
+				listOfLines.map(function(x) {
+					drawLine(x.start.x, x.start.y, x.end.x, x.end.y, "red") 
+				})
+				ctx.lineWidth = 1
+			} else {
+				for(let i = 0; i < settings.lineDensity; i++) {
+					let ray = createRay(vect(x, y), 2*i*Math.PI/settings.lineDensity)
+					drawRay(ray, listOfLines)
+				}
+			}
+		})
+		c.addEventListener("mousedown", function(e) {
+			newlinestartx = e.clientX
+			newlinestarty = e.clientY
+			settings.mousePressed = true
+		})
+		c.addEventListener("mouseup", function(e) {
+			newlineendx = e.clientX
+			newlineendy = e.clientY
+			listOfLines.push(drawLine(newlinestartx, settings.screenHeight - newlinestarty, newlineendx, settings.screenHeight - newlineendy, "white"))
+			settings.mousePressed = false
+		})
+	</script>
+</html>
