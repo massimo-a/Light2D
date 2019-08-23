@@ -1,21 +1,27 @@
 <html>
 	<canvas id="c" width="1000" height="600"></canvas>
+	<button onclick="settings.lightVisible = !settings.lightVisible">Toggle Light</button>
+	<button onclick="settings.wallsVisible = !settings.wallsVisible">Toggle Walls</button>
+	<button onclick="settings.lightIntensity = settings.lightIntensity + 100">Increase Light by 100</button>
+	<button onclick="if(settings.lightIntensity >= 100) settings.lightIntensity = settings.lightIntensity - 100">Decrease Light by 100</button>
+	<script src="vector.js"></script>
 	<script>
 		let settings = {
 			rayColor: "#FFFFFF",
 			wallColor: "#000000",
 			mousePressed: false,
-			lineDensity: 100,
+			lightIntensity: 100,
 			screenWidth: 1000,
 			screenHeight: 600,
-			maxRayLength: 500
+			maxRayLength: 500,
+			walls: [],
+			lightVisible: true,
+			wallsVisible: false,
+			backgroundColor: "#000000"
 		}
 		let c = document.getElementById("c")
 		let ctx = c.getContext("2d")
 		
-		let vect = function(x0, y0) {
-			return {x: x0, y: y0}
-		}
 		let drawLine = function(x1, y1, x2, y2, col) {
 			ctx.beginPath()
 			ctx.strokeStyle = col
@@ -30,26 +36,6 @@
 				end: vect(x2, y2),
 				dir: vect(dirx, diry)
 			}
-		}
-		let listOfLines = []
-		
-		let dot = function(v1, v2) {
-			return v1.x*v2.x + v1.y*v2.y
-		}
-		let sub = function(v1, v2) {
-			return vect(v1.x - v2.x, v1.y - v2.y)
-		}
-		let add = function(v1, v2) {
-			return vect(v1.x + v2.x, v1.y + v2.y)
-		}
-		let scale = function(v, a) {
-			return vect(v.x*a, v.y*a)
-		}
-		let cross = function(v1, v2) {
-			return v1.x*v2.y - v1.y*v2.x
-		}
-		let createRay = function(pt, rad) {
-			return {origin: pt, dir: vect(Math.cos(rad), Math.sin(rad))}
 		}
 		let checkIntersection = function(ray, lines) {
 			let arrOfPts = []
@@ -79,7 +65,7 @@
 			}
 		}
 		let clearScreen = function() {
-			ctx.fillStyle = "black"
+			ctx.fillStyle = settings.backgroundColor
 			ctx.fillRect(0, 0, settings.screenWidth, settings.screenHeight)
 		}
 		
@@ -98,15 +84,20 @@
 				ctx.lineTo(e.clientX, e.clientY)
 				ctx.lineWidth = 3
 				ctx.stroke()
-				listOfLines.map(function(x) {
+				settings.walls.map(function(x) {
 					drawLine(x.start.x, x.start.y, x.end.x, x.end.y, "red") 
 				})
 				ctx.lineWidth = 1
-			} else {
-				for(let i = 0; i < settings.lineDensity; i++) {
-					let ray = createRay(vect(x, y), 2*i*Math.PI/settings.lineDensity)
-					drawRay(ray, listOfLines)
+			} else if(settings.lightVisible) {
+				for(let i = 0; i < settings.lightIntensity; i++) {
+					let ray = createRay(vect(x, y), 2*i*Math.PI/settings.lightIntensity)
+					drawRay(ray, settings.walls)
 				}
+			}
+			if(settings.wallsVisible) {
+				settings.walls.map(function(x) {
+					drawLine(x.start.x, x.start.y, x.end.x, x.end.y, "red") 
+				})
 			}
 		})
 		c.addEventListener("mousedown", function(e) {
@@ -117,7 +108,7 @@
 		c.addEventListener("mouseup", function(e) {
 			newlineendx = e.clientX
 			newlineendy = e.clientY
-			listOfLines.push(drawLine(newlinestartx, settings.screenHeight - newlinestarty, newlineendx, settings.screenHeight - newlineendy, "white"))
+			settings.walls.push(drawLine(newlinestartx, settings.screenHeight - newlinestarty, newlineendx, settings.screenHeight - newlineendy, "white"))
 			settings.mousePressed = false
 		})
 	</script>
