@@ -1,0 +1,38 @@
+html, body {
+	padding: 0;
+	margin: 0;
+}
+.btn, button {
+	float: left;
+	width: 150px;
+	display: block;
+	padding: 5px 10px;
+	margin: 10px;
+	color: #000000;
+	cursor: default;
+	background-color: #c5aa6a;
+	text-align: center;
+	font-family: sans-serif;
+	box-shadow: 2px 5px 4px #555555;
+	border: none;
+}
+.clicker:hover {
+	background-color: #5f4c4c;
+	color: #B0B0B0;
+	transition: 0.2s;
+}
+.clicker:active {
+	background-color: #404040;
+	transition: 0.2s;
+}
+.toggle-btn {
+	color: #202020;
+	background-color: #88d8b0;
+	transition: 0.2s;
+	cursor: pointer;
+	box-shadow: 2px 5px 4px #555555
+}
+.nav-bar {
+	height: 60px;
+	background-color: #ffcc5c;
+}

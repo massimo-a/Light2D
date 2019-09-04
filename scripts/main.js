@@ -1,15 +1,18 @@
 let settings = {
 	rayColor: "#FFFFFF",
-	wallColor: "#000000",
+	wallColor: "#FFFFFF",
 	mousePressed: false,
-	lightIntensity: 100,
-	screenWidth: 600,
-	screenHeight: 600,
+	lightIntensity: 250,
+	screenWidth: 1280,
+	screenHeight: 550,
 	maxRayLength: 500,
 	walls: [],
 	lightVisible: true,
-	wallsVisible: false,
+	wallsVisible: true,
 	backgroundColor: "#000000"
+}
+if(window.localStorage.getItem("Light2DWalls")) {
+	settings.walls = JSON.parse(window.localStorage.getItem("Light2DWalls"));
 }
 let c = document.getElementById("c")
 let ctx = c.getContext("2d")
@@ -27,13 +30,10 @@ let drawLine = function(x1, y1, x2, y2, col) {
 	ctx.moveTo(x1, settings.screenHeight - y1)
 	ctx.lineTo(x2, settings.screenHeight - y2)
 	ctx.stroke()
-	let dist = Math.sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1))
-	let dirx = (x2 - x1)
-	let diry = (y2 - y1)
 	return {
 		start: vect(x1, y1),
 		end: vect(x2, y2),
-		dir: vect(dirx, diry)
+		dir: sub(vect(x2, y2), vect(x1, y1))
 	}
 }
 let checkIntersection = function(ray, lines) {
