@@ -14,7 +14,7 @@ let settings = {
 if(window.localStorage.getItem("Light2DWalls")) {
 	settings.walls = JSON.parse(window.localStorage.getItem("Light2DWalls"));
 }
-let c = document.getElementById("c")
+let c = document.getElementsByTagName("canvas")[0]
 let ctx = c.getContext("2d")
 
 function setLightColor(picker) {
@@ -22,6 +22,9 @@ function setLightColor(picker) {
 }
 function setWallColor(picker) {
 	settings.wallColor = '#' + picker.toString()
+}
+function setCanvasColor(picker) {
+	settings.backgroundColor = '#' + picker.toString()
 }
 
 let drawLine = function(x1, y1, x2, y2, col) {
@@ -37,15 +40,17 @@ let drawLine = function(x1, y1, x2, y2, col) {
 	}
 }
 let checkIntersection = function(ray, lines) {
-	let arrOfPts = []
-	for(let i = 0; i < lines.length; i++) {
-		let u = cross(sub(lines[i].start, ray.origin), ray.dir)/cross(ray.dir, lines[i].dir)
-		let t = cross(sub(lines[i].start, ray.origin), lines[i].dir)/cross(ray.dir, lines[i].dir)
+	return lines.map(line => {
+		let u = cross(sub(line.start, ray.origin), ray.dir)/cross(ray.dir, line.dir)
+		let t = cross(sub(line.start, ray.origin), line.dir)/cross(ray.dir, line.dir)
 		if(u > 0 && u < 1) {
-			arrOfPts.push(t)
+			return t
+		} else {
+			return -1
 		}
-	}
-	return arrOfPts.filter(x => x > 0 && x < settings.maxRayLength).reduce((x, y) => Math.min(x, y), Infinity)
+	})
+	.filter(x => x > 0 && x < settings.maxRayLength)
+	.reduce((x, y) => Math.min(x, y), Infinity)
 }
 let drawRay = function(ray, lines) {
 	let intersection = checkIntersection(ray, lines)
@@ -71,7 +76,6 @@ function getMousePosInCanvas(canvas, evt) {
 	let rect = canvas.getBoundingClientRect();
 	return vect(evt.clientX - rect.left, evt.clientY - rect.top)
 }
-
 
 let newLineStart = vect(0, 0)
 c.addEventListener("mousemove", function(e) {

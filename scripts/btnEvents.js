@@ -2,8 +2,11 @@ let buttons = {
 	toggleLight: document.getElementById("light-visible"),
 	toggleWalls: document.getElementById("walls-visible"),
 	save: document.getElementById("save"),
-	resetWalls: document.getElementById("walls-reset")
+	resetWalls: document.getElementById("walls-reset"),
+	menuIcon: document.getElementById("menu-btn"),
+	lightIntensity: document.getElementById("light-intensity")
 }
+let menu = document.getElementById("menu");
 
 buttons.toggleLight.addEventListener("click", function() {
 	settings.lightVisible = !settings.lightVisible
@@ -30,4 +33,14 @@ buttons.save.addEventListener("click", function() {
 })
 buttons.resetWalls.addEventListener("click", function() {
 	settings.walls = []
+	window.localStorage.setItem("Light2DWalls", JSON.stringify(settings.walls))
+})
+buttons.menuIcon.addEventListener("click", function() {
+	buttons.menuIcon.classList.toggle("change");
+	menu.classList.toggle("hide");
+})
+buttons.lightIntensity.addEventListener("change", function() {
+	if(!isNaN(parseInt(buttons.lightIntensity.value))) {
+		settings.lightIntensity = parseInt(buttons.lightIntensity.value);
+	}
 })

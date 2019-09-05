@@ -2,13 +2,53 @@ html, body {
 	padding: 0;
 	margin: 0;
 }
+#menu-btn {
+  display: inline-block;
+  cursor: pointer;
+}
+#menu {
+	box-shadow: 2px 5px 7px #555555;
+	width: 200px;
+	position: absolute;
+	left: 35%;
+	top: 10%;
+	background-color: #ffcc5c;
+	transition: 0.5s;
+	padding: 20px;
+	font-family: sans-serif;
+}
+#menu > * {
+	margin: 20px 10px;
+}
+.hide {
+	opacity: 0;
+	visibility: hidden;
+}
+.dash {
+  width: 35px;
+  height: 5px;
+  background-color: #333;
+  margin: 6px 0;
+  transition: 0.4s;
+}
+.change .dash:nth-child(1) {
+	-webkit-transform: rotate(-45deg) translate(-9px, 6px);
+	transform: rotate(-45deg) translate(-9px, 6px);
+}
+.change .dash:nth-child(2) {opacity:0;}
+
+.change .dash:nth-child(3) {
+	-webkit-transform: rotate(45deg) translate(-8px, -8px);
+	transform: rotate(45deg) translate(-8px, -8px);
+}
+
 .btn, button {
 	float: left;
-	width: 150px;
+	width: 140px;
 	display: block;
-	padding: 5px 10px;
+	padding: 5px 8px;
 	margin: 10px;
-	color: #000000;
+	color: #101010;
 	cursor: default;
 	background-color: #c5aa6a;
 	text-align: center;
