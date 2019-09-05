@@ -4,9 +4,11 @@ let buttons = {
 	save: document.getElementById("save"),
 	resetWalls: document.getElementById("walls-reset"),
 	menuIcon: document.getElementById("menu-btn"),
-	lightIntensity: document.getElementById("light-intensity")
+	undo: document.getElementById("undo")
 }
-let menu = document.getElementById("menu");
+let menu = document.getElementById("menu")
+let lightIntensity = document.getElementById("light-intensity")
+let filler = document.getElementById("filler")
 
 buttons.toggleLight.addEventListener("click", function() {
 	settings.lightVisible = !settings.lightVisible
@@ -38,9 +40,13 @@ buttons.resetWalls.addEventListener("click", function() {
 buttons.menuIcon.addEventListener("click", function() {
 	buttons.menuIcon.classList.toggle("change");
 	menu.classList.toggle("hide");
+	filler.classList.toggle("hide");
 })
-buttons.lightIntensity.addEventListener("change", function() {
-	if(!isNaN(parseInt(buttons.lightIntensity.value))) {
-		settings.lightIntensity = parseInt(buttons.lightIntensity.value);
+lightIntensity.addEventListener("change", function() {
+	if(!isNaN(parseInt(lightIntensity.value))) {
+		settings.lightIntensity = parseInt(lightIntensity.value);
 	}
+})
+buttons.undo.addEventListener("click", function() {
+	settings.walls.pop();
 })
