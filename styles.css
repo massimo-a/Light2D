@@ -22,6 +22,20 @@ html, body {
 #menu > * {
 	margin: 20px 10px;
 }
+#about-page {
+	box-shadow: 2px 5px 7px #555555;
+	width: 200px;
+	position: absolute;
+	left: 35%;
+	top: 10%;
+	background-color: #ffcc5c;
+	transition: 0.5s;
+	padding: 20px;
+	font-family: sans-serif;
+}
+#about-page > * {
+	margin: 20px 10px;
+}
 #filler {
 	position: absolute;
 	left: 0;
@@ -57,7 +71,7 @@ html, body {
 
 .btn, button {
 	float: left;
-	width: 140px;
+	width: 100px;
 	display: block;
 	padding: 5px 8px;
 	margin: 10px;

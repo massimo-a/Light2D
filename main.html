@@ -7,6 +7,7 @@
 		<div class="btn clicker" id="walls-reset">Reset Walls</div>
 		<div class="btn clicker" id="save">Save!</div>
 		<div class="btn clicker" id="undo">Undo</div>
+		<div class="btn clicker" id="about">About</div>
 		<div id="menu-btn">
 			<div class="dash"></div>
 			<div class="dash"></div>
@@ -19,6 +20,9 @@
 		<button class="btn jscolor {valueElement:'chosen-value', onFineChange:'setLightColor(this)'}">Pick light color</button>
 		<button class="btn jscolor {valueElement:'chosen-value', onFineChange:'setWallColor(this)'}">Pick wall color</button>
 		<button class="btn jscolor {valueElement:'chosen-value', onFineChange:'setCanvasColor(this)'}">Pick canvas color</button>
+	</div>
+	<div id="about-page" class="hide">
+		Drawing a line: click and drag within the canvas <br/>
 	</div>
 	<canvas id="c" width="1280" height="550"></canvas>
 	<script src="scripts/btnEvents.js"></script>

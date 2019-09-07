@@ -1,7 +1,6 @@
 let settings = {
 	rayColor: "#FFFFFF",
 	wallColor: "#FFFFFF",
-	mousePressed: false,
 	lightIntensity: 250,
 	screenWidth: 1280,
 	screenHeight: 550,
@@ -76,21 +75,19 @@ function getMousePosInCanvas(canvas, evt) {
 	let rect = canvas.getBoundingClientRect();
 	return vect(evt.clientX - rect.left, evt.clientY - rect.top)
 }
-
-let newLineStart = vect(0, 0)
-c.addEventListener("mousemove", function(e) {
+let update = function(e, mouseDown, linestart) {
 	let x = getMousePosInCanvas(c, e).x
 	let y = settings.screenHeight - getMousePosInCanvas(c, e).y
 	clearScreen()
-	if(settings.mousePressed) {
+	if(mouseDown) {
 		ctx.beginPath()
-		ctx.strokeStyle = "red"
-		ctx.moveTo(newLineStart.x, newLineStart.y)
+		ctx.strokeStyle = "#FF0000"
+		ctx.moveTo(linestart.x, linestart.y)
 		ctx.lineTo(getMousePosInCanvas(c, e).x, getMousePosInCanvas(c, e).y)
 		ctx.lineWidth = 3
 		ctx.stroke()
 		settings.walls.map(function(wall) {
-			drawLine(wall.start.x, wall.start.y, wall.end.x, wall.end.y, "red") 
+			drawLine(wall.start.x, wall.start.y, wall.end.x, wall.end.y, "#FF0000") 
 		})
 		ctx.lineWidth = 1
 	} else if(settings.lightVisible) {
@@ -104,12 +101,26 @@ c.addEventListener("mousemove", function(e) {
 			drawLine(x.start.x, x.start.y, x.end.x, x.end.y, settings.wallColor)
 		})
 	}
-})
-c.addEventListener("mousedown", function(e) {
-	newLineStart = getMousePosInCanvas(c, e)
-	settings.mousePressed = true
-})
-c.addEventListener("mouseup", function(e) {
-	settings.walls.push(drawLine(newLineStart.x, settings.screenHeight - newLineStart.y, getMousePosInCanvas(c, e).x, settings.screenHeight - getMousePosInCanvas(c, e).y, "white"))
-	settings.mousePressed = false
-})
+}
+let canvasEvents = function() {
+	let newLineStart = vect(0, 0)
+	let mouseDown = false
+	c.addEventListener("mousemove", function(e) {update(e, mouseDown, newLineStart)})
+	c.addEventListener("mousedown", function(e) {
+		newLineStart = getMousePosInCanvas(c, e)
+		mouseDown = true
+	})
+	c.addEventListener("mouseup", function(e) {
+		settings.walls.push(
+			drawLine(
+				newLineStart.x,
+				settings.screenHeight - newLineStart.y,
+				getMousePosInCanvas(c, e).x,
+				settings.screenHeight - getMousePosInCanvas(c, e).y,
+				"#FFFFFF"
+			)
+		)
+		mouseDown = false
+	})
+}
+canvasEvents()

@@ -4,9 +4,11 @@ let buttons = {
 	save: document.getElementById("save"),
 	resetWalls: document.getElementById("walls-reset"),
 	menuIcon: document.getElementById("menu-btn"),
-	undo: document.getElementById("undo")
+	undo: document.getElementById("undo"),
+	about: document.getElementById("about")
 }
 let menu = document.getElementById("menu")
+let aboutPage = document.getElementById("about-page")
 let lightIntensity = document.getElementById("light-intensity")
 let filler = document.getElementById("filler")
 
@@ -39,7 +41,12 @@ buttons.resetWalls.addEventListener("click", function() {
 })
 buttons.menuIcon.addEventListener("click", function() {
 	buttons.menuIcon.classList.toggle("change");
-	menu.classList.toggle("hide");
+	aboutPage.classList.toggle("hide");
+	filler.classList.toggle("hide");
+})
+buttons.about.addEventListener("click", function() {
+	buttons.menuIcon.classList.toggle("change");
+	aboutPage.classList.toggle("hide");
 	filler.classList.toggle("hide");
 })
 lightIntensity.addEventListener("change", function() {
