@@ -41,7 +41,7 @@ buttons.resetWalls.addEventListener("click", function() {
 })
 buttons.menuIcon.addEventListener("click", function() {
 	buttons.menuIcon.classList.toggle("change");
-	aboutPage.classList.toggle("hide");
+	menu.classList.toggle("hide");
 	filler.classList.toggle("hide");
 })
 buttons.about.addEventListener("click", function() {
