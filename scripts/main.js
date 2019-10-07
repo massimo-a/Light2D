@@ -1,3 +1,5 @@
+let c = document.getElementsByTagName("canvas")[0]
+let ctx = c.getContext("2d")
 let settings = {
 	rayColor: "#FFFFFF",
 	wallColor: "#FFFFFF",
@@ -8,49 +10,15 @@ let settings = {
 	walls: [],
 	lightVisible: true,
 	wallsVisible: true,
-	backgroundColor: "#000000"
+	backgroundColor: "#000000",
+	fieldOfView: Math.PI/4,
+	viewDirection: Math.PI/2,
+	currentPosition: vect(250, 500)
 }
 if(window.localStorage.getItem("Light2DWalls")) {
 	settings.walls = JSON.parse(window.localStorage.getItem("Light2DWalls"));
 }
-let c = document.getElementsByTagName("canvas")[0]
-let ctx = c.getContext("2d")
 
-function setLightColor(picker) {
-	settings.rayColor = '#' + picker.toString()
-}
-function setWallColor(picker) {
-	settings.wallColor = '#' + picker.toString()
-}
-function setCanvasColor(picker) {
-	settings.backgroundColor = '#' + picker.toString()
-}
-
-let drawLine = function(x1, y1, x2, y2, col) {
-	ctx.beginPath()
-	ctx.strokeStyle = col
-	ctx.moveTo(x1, settings.screenHeight - y1)
-	ctx.lineTo(x2, settings.screenHeight - y2)
-	ctx.stroke()
-	return {
-		start: vect(x1, y1),
-		end: vect(x2, y2),
-		dir: sub(vect(x2, y2), vect(x1, y1))
-	}
-}
-let checkIntersection = function(ray, lines) {
-	return lines.map(line => {
-		let u = cross(sub(line.start, ray.origin), ray.dir)/cross(ray.dir, line.dir)
-		let t = cross(sub(line.start, ray.origin), line.dir)/cross(ray.dir, line.dir)
-		if(u > 0 && u < 1) {
-			return t
-		} else {
-			return -1
-		}
-	})
-	.filter(x => x > 0 && x < settings.maxRayLength)
-	.reduce((x, y) => Math.min(x, y), Infinity)
-}
 let drawRay = function(ray, lines) {
 	let intersection = checkIntersection(ray, lines)
 	let pt = -1
@@ -67,60 +35,64 @@ let drawRay = function(ray, lines) {
 		ctx.stroke()
 	}
 }
-let clearScreen = function() {
-	ctx.fillStyle = settings.backgroundColor
-	ctx.fillRect(0, 0, settings.screenWidth, settings.screenHeight)
-}
-function getMousePosInCanvas(canvas, evt) {
-	let rect = canvas.getBoundingClientRect();
-	return vect(evt.clientX - rect.left, evt.clientY - rect.top)
-}
-let update = function(e, mouseDown, linestart) {
-	let x = getMousePosInCanvas(c, e).x
-	let y = settings.screenHeight - getMousePosInCanvas(c, e).y
-	clearScreen()
+
+let update = function(e, v, mouseDown, linestart) {
+	let x = getPosInCanvas(c, v).x
+	let y = getPosInCanvas(c, v).y
+	clearScreen(ctx)
+	drawCircle(ctx)("#0000FF")(10)(x, y)
 	if(mouseDown) {
-		ctx.beginPath()
-		ctx.strokeStyle = "#FF0000"
-		ctx.moveTo(linestart.x, linestart.y)
-		ctx.lineTo(getMousePosInCanvas(c, e).x, getMousePosInCanvas(c, e).y)
-		ctx.lineWidth = 3
-		ctx.stroke()
+		drawLine(ctx)(linestart, getPosInCanvas(c, vect(e.clientX, e.clientY)), "#FF0000")
 		settings.walls.map(function(wall) {
-			drawLine(wall.start.x, wall.start.y, wall.end.x, wall.end.y, "#FF0000") 
+			drawLine(ctx)(toScreenSpace(wall.start), toScreenSpace(wall.end), "#FF0000") 
 		})
-		ctx.lineWidth = 1
-	} else if(settings.lightVisible) {
-		for(let i = 0; i < settings.lightIntensity; i++) {
-			let ray = createRay(vect(x, y), 2*i*Math.PI/settings.lightIntensity)
-			drawRay(ray, settings.walls)
-		}
+	}
+	for(let i = 0; i < settings.lightIntensity; i++) {
+		let ray = createRay(vect(x, settings.screenHeight - y), i*settings.fieldOfView/settings.lightIntensity + (settings.viewDirection-settings.fieldOfView/2))
+		drawRay(ray, settings.walls)
 	}
 	if(settings.wallsVisible) {
-		settings.walls.map(function(x) {
-			drawLine(x.start.x, x.start.y, x.end.x, x.end.y, settings.wallColor)
+		settings.walls.map(function(w) {
+			drawLine(ctx)(toScreenSpace(w.start), toScreenSpace(w.end), settings.wallColor)
 		})
 	}
 }
+
 let canvasEvents = function() {
 	let newLineStart = vect(0, 0)
 	let mouseDown = false
-	c.addEventListener("mousemove", function(e) {update(e, mouseDown, newLineStart)})
+	window.addEventListener("keydown", function(e) {
+		if(e.keyCode == 37) {
+			settings.viewDirection += Math.PI/32
+		} else if(e.keyCode == 39) {
+			settings.viewDirection -= Math.PI/32
+		} else if(e.keyCode == 38) {
+			let y = settings.currentPosition.y - Math.sin(settings.viewDirection)*3
+			let x = settings.currentPosition.x + Math.cos(settings.viewDirection)*3
+			if(!anyWallsIntersectPlayer(x, y)) {
+				settings.currentPosition.y = y
+				settings.currentPosition.x = x
+			}
+		} else if(e.keyCode == 40) {
+			settings.currentPosition.y += Math.sin(settings.viewDirection)*3
+			settings.currentPosition.x -= Math.cos(settings.viewDirection)*3
+		}
+		update(e, settings.currentPosition, mouseDown, newLineStart)
+	})
 	c.addEventListener("mousedown", function(e) {
-		newLineStart = getMousePosInCanvas(c, e)
+		newLineStart = getPosInCanvas(c, vect(e.clientX, e.clientY))
 		mouseDown = true
 	})
+	c.addEventListener("mousemove", function(e) {
+		update(e, settings.currentPosition, mouseDown, newLineStart)
+	})
 	c.addEventListener("mouseup", function(e) {
-		settings.walls.push(
-			drawLine(
-				newLineStart.x,
-				settings.screenHeight - newLineStart.y,
-				getMousePosInCanvas(c, e).x,
-				settings.screenHeight - getMousePosInCanvas(c, e).y,
-				"#FFFFFF"
-			)
-		)
+		let _start = vect(newLineStart.x, settings.screenHeight - newLineStart.y)
+		let _end = toScreenSpace(getPosInCanvas(c, vect(e.clientX, e.clientY)))
+		settings.walls.push({start: _start, end: _end, dir: sub(_end, _start)})
+		drawLine(ctx)(newLineStart, getPosInCanvas(c, vect(e.clientX, e.clientY)), "#FFFFFF")
 		mouseDown = false
+		update(e, settings.currentPosition, mouseDown, newLineStart)
 	})
 }
 canvasEvents()

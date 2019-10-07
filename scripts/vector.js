@@ -16,6 +16,19 @@ let scale = function(v, a) {
 let cross = function(v1, v2) {
 	return v1.x*v2.y - v1.y*v2.x
 }
+let mag = function(u) {
+	return Math.sqrt(dot(u, u))
+}
+let norm = function(u) {
+	return scale(u, 1/mag(u))
+}
+let proj = function(u, v) {
+	let dir = norm(v)
+	return scale(dir, dot(u, dir))
+}
+let rej = function(u, v) {
+	return sub(u, proj(u, v))
+}
 let createRay = function(pt, rad) {
 	return {origin: pt, dir: vect(Math.cos(rad), Math.sin(rad))}
 }

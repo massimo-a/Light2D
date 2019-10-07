@@ -8,20 +8,15 @@ let buttons = {
 	about: document.getElementById("about")
 }
 let menu = document.getElementById("menu")
+let sliders = document.getElementsByClassName("slider")
 let aboutPage = document.getElementById("about-page")
 let lightIntensity = document.getElementById("light-intensity")
 let filler = document.getElementById("filler")
+let hideAboutPage = function() {
+	aboutPage.classList.add("hide");
+	filler.classList.add("hide");
+}
 
-buttons.toggleLight.addEventListener("click", function() {
-	settings.lightVisible = !settings.lightVisible
-	if(settings.lightVisible) {
-		buttons.toggleLight.innerHTML = "Light On"
-		buttons.toggleLight.style.backgroundColor = "#88d8b0"
-	} else {
-		buttons.toggleLight.innerHTML = "Light Off"
-		buttons.toggleLight.style.backgroundColor = "#ff6f69"
-	}
-})
 buttons.toggleWalls.addEventListener("click", function() {
 	settings.wallsVisible = !settings.wallsVisible
 	if(settings.wallsVisible) {
@@ -43,12 +38,14 @@ buttons.menuIcon.addEventListener("click", function() {
 	buttons.menuIcon.classList.toggle("change");
 	menu.classList.toggle("hide");
 	filler.classList.toggle("hide");
+	filler.removeEventListener("click", hideAboutPage)
 })
 buttons.about.addEventListener("click", function() {
-	buttons.menuIcon.classList.toggle("change");
 	aboutPage.classList.toggle("hide");
 	filler.classList.toggle("hide");
+	filler.addEventListener("click", hideAboutPage)
 })
+
 lightIntensity.addEventListener("change", function() {
 	if(!isNaN(parseInt(lightIntensity.value))) {
 		settings.lightIntensity = parseInt(lightIntensity.value);
@@ -56,4 +53,7 @@ lightIntensity.addEventListener("change", function() {
 })
 buttons.undo.addEventListener("click", function() {
 	settings.walls.pop();
+})
+sliders[0].addEventListener("input", function() {
+	settings.fieldOfView = parseFloat(sliders[0].value)
 })

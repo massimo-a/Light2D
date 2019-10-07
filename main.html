@@ -2,7 +2,6 @@
 	<div id="filler" class="hide"></div>
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<div class="nav-bar">
-		<div class="btn toggle-btn" id="light-visible">Light On</div>
 		<div class="btn toggle-btn" id="walls-visible">Walls On</div>
 		<div class="btn clicker" id="walls-reset">Reset Walls</div>
 		<div class="btn clicker" id="save">Save!</div>
@@ -12,6 +11,9 @@
 			<div class="dash"></div>
 			<div class="dash"></div>
 			<div class="dash"></div>
+		</div>
+		<div class="slidecontainer">
+			<input type="range" min="0" max="6.28" value="1" step="0.01" class="slider" id="myRange">
 		</div>
 	</div>
 	<div id="menu" class="hide">
@@ -28,5 +30,7 @@
 	<script src="scripts/btnEvents.js"></script>
 	<script src="scripts/vector.js"></script>
 	<script src="scripts/jscolor.js"></script>
+	<script src="scripts/util.js"></script>
+	<script src="scripts/intersect.js"></script>
 	<script src="scripts/main.js"></script>
 </html>
