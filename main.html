@@ -1,35 +1,15 @@
 <html>
-	<div id="filler" class="hide"></div>
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<div class="nav-bar">
 		<div class="btn toggle-btn" id="walls-visible">Walls On</div>
 		<div class="btn clicker" id="walls-reset">Reset Walls</div>
 		<div class="btn clicker" id="save">Save!</div>
 		<div class="btn clicker" id="undo">Undo</div>
-		<div class="btn clicker" id="about">About</div>
-		<div id="menu-btn">
-			<div class="dash"></div>
-			<div class="dash"></div>
-			<div class="dash"></div>
-		</div>
-		<div class="slidecontainer">
-			<input type="range" min="0" max="6.28" value="1" step="0.01" class="slider" id="myRange">
-		</div>
 	</div>
-	<div id="menu" class="hide">
-		<label>Set light intensity</label><br/>
-		<input id="light-intensity"/>
-		<button class="btn jscolor {valueElement:'chosen-value', onFineChange:'setLightColor(this)'}">Pick light color</button>
-		<button class="btn jscolor {valueElement:'chosen-value', onFineChange:'setWallColor(this)'}">Pick wall color</button>
-		<button class="btn jscolor {valueElement:'chosen-value', onFineChange:'setCanvasColor(this)'}">Pick canvas color</button>
-	</div>
-	<div id="about-page" class="hide">
-		Drawing a line: click and drag within the canvas <br/>
-	</div>
-	<canvas id="c" width="1280" height="550"></canvas>
+	<canvas id="c" width="640" height="550"></canvas>
+	<canvas id="c" width="640" height="550"></canvas>
 	<script src="scripts/btnEvents.js"></script>
 	<script src="scripts/vector.js"></script>
-	<script src="scripts/jscolor.js"></script>
 	<script src="scripts/util.js"></script>
 	<script src="scripts/intersect.js"></script>
 	<script src="scripts/main.js"></script>

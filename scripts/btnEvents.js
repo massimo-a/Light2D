@@ -3,12 +3,9 @@ let buttons = {
 	toggleWalls: document.getElementById("walls-visible"),
 	save: document.getElementById("save"),
 	resetWalls: document.getElementById("walls-reset"),
-	menuIcon: document.getElementById("menu-btn"),
 	undo: document.getElementById("undo"),
 	about: document.getElementById("about")
 }
-let menu = document.getElementById("menu")
-let sliders = document.getElementsByClassName("slider")
 let aboutPage = document.getElementById("about-page")
 let lightIntensity = document.getElementById("light-intensity")
 let filler = document.getElementById("filler")
@@ -34,12 +31,6 @@ buttons.resetWalls.addEventListener("click", function() {
 	settings.walls = []
 	window.localStorage.setItem("Light2DWalls", JSON.stringify(settings.walls))
 })
-buttons.menuIcon.addEventListener("click", function() {
-	buttons.menuIcon.classList.toggle("change");
-	menu.classList.toggle("hide");
-	filler.classList.toggle("hide");
-	filler.removeEventListener("click", hideAboutPage)
-})
 buttons.about.addEventListener("click", function() {
 	aboutPage.classList.toggle("hide");
 	filler.classList.toggle("hide");
@@ -53,7 +44,4 @@ lightIntensity.addEventListener("change", function() {
 })
 buttons.undo.addEventListener("click", function() {
 	settings.walls.pop();
-})
-sliders[0].addEventListener("input", function() {
-	settings.fieldOfView = parseFloat(sliders[0].value)
 })

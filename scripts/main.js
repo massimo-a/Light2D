@@ -1,20 +1,23 @@
 let c = document.getElementsByTagName("canvas")[0]
+let c2 = document.getElementsByTagName("canvas")[1]
 let ctx = c.getContext("2d")
+let ctx2 = c2.getContext("2d")
 let settings = {
 	rayColor: "#FFFFFF",
 	wallColor: "#FFFFFF",
-	lightIntensity: 250,
-	screenWidth: 1280,
+	lightIntensity: 640,
+	screenWidth: 640,
 	screenHeight: 550,
-	maxRayLength: 500,
+	maxRayLength: 800,
 	walls: [],
 	lightVisible: true,
 	wallsVisible: true,
 	backgroundColor: "#000000",
-	fieldOfView: Math.PI/4,
+	fieldOfView: Math.PI/8,
 	viewDirection: Math.PI/2,
 	currentPosition: vect(250, 500)
 }
+
 if(window.localStorage.getItem("Light2DWalls")) {
 	settings.walls = JSON.parse(window.localStorage.getItem("Light2DWalls"));
 }
@@ -22,8 +25,10 @@ if(window.localStorage.getItem("Light2DWalls")) {
 let drawRay = function(ray, lines) {
 	let intersection = checkIntersection(ray, lines)
 	let pt = -1
+	let res = settings.maxRayLength
 	if(intersection != Infinity) {
 		pt = add(scale(ray.dir, intersection), ray.origin)
+		res = intersection
 	} else {
 		pt = add(scale(ray.dir, settings.maxRayLength), ray.origin)
 	}
@@ -34,6 +39,7 @@ let drawRay = function(ray, lines) {
 		ctx.lineTo(pt.x, settings.screenHeight - pt.y)
 		ctx.stroke()
 	}
+	return res
 }
 
 let update = function(e, v, mouseDown, linestart) {
@@ -47,9 +53,14 @@ let update = function(e, v, mouseDown, linestart) {
 			drawLine(ctx)(toScreenSpace(wall.start), toScreenSpace(wall.end), "#FF0000") 
 		})
 	}
+	clearScreen(ctx2)
 	for(let i = 0; i < settings.lightIntensity; i++) {
 		let ray = createRay(vect(x, settings.screenHeight - y), i*settings.fieldOfView/settings.lightIntensity + (settings.viewDirection-settings.fieldOfView/2))
-		drawRay(ray, settings.walls)
+		let ratio = (settings.maxRayLength - drawRay(ray, settings.walls))/settings.maxRayLength
+		let height = parseInt(settings.screenHeight*ratio*ratio)
+		let color = parseInt(255*ratio*ratio)
+		ctx2.fillStyle = "rgb(" + color + "," + color + "," + color + ")"
+		ctx2.fillRect(settings.screenWidth - i - 1, (settings.screenHeight - height)/2, 1, height)
 	}
 	if(settings.wallsVisible) {
 		settings.walls.map(function(w) {
@@ -67,15 +78,11 @@ let canvasEvents = function() {
 		} else if(e.keyCode == 39) {
 			settings.viewDirection -= Math.PI/32
 		} else if(e.keyCode == 38) {
-			let y = settings.currentPosition.y - Math.sin(settings.viewDirection)*3
-			let x = settings.currentPosition.x + Math.cos(settings.viewDirection)*3
-			if(!anyWallsIntersectPlayer(x, y)) {
-				settings.currentPosition.y = y
-				settings.currentPosition.x = x
-			}
+			settings.currentPosition.y -= Math.sin(settings.viewDirection)*4
+			settings.currentPosition.x += Math.cos(settings.viewDirection)*4
 		} else if(e.keyCode == 40) {
-			settings.currentPosition.y += Math.sin(settings.viewDirection)*3
-			settings.currentPosition.x -= Math.cos(settings.viewDirection)*3
+			settings.currentPosition.y += Math.sin(settings.viewDirection)*4
+			settings.currentPosition.x -= Math.cos(settings.viewDirection)*4
 		}
 		update(e, settings.currentPosition, mouseDown, newLineStart)
 	})
